@@ -16,11 +16,11 @@ spring:
         locator:
           enable: true
       routes:
-        - id: ms-estudiante-service
-          uri: lb://ms-estudiante-service
+        - id: wom-estudiante-service
+          uri: lb://wom-estudiante-service
           predicates:
             - Path=/estudiantes/**
-        - id: ms-curso-service
-          uri: lb://ms-curso-service
+        - id: wom-curso-service
+          uri: lb://wom-curso-service
           predicates:
             - Path=/cursos/**
