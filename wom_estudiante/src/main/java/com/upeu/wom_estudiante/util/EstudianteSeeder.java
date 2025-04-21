@@ -25,7 +25,7 @@ public class EstudianteSeeder implements CommandLineRunner {
                 Estudiante estudiante = new Estudiante();
                 estudiante.setNombre("Nombre" + i);
                 estudiante.setApellido("Apellido" + i);
-                estudiante.setDni("1234567" + String.format("%02d", i));  // DNI de 8 dígitos
+                estudiante.setDni("1234567" + String.format("%02d", i));  // DNI de 8 dígitos (String)
                 estudiante.setCarrera("Carrera " + (i % 3 + 1));  // Asignar alguna carrera (Carrera 1, Carrera 2, etc)
                 estudiante.setEstado(i % 2 == 0 ? "ACTIVO" : "INACTIVO");  // Alterna entre "ACTIVO" e "INACTIVO"
                 estudiante.setCicloActual(i % 10 + 1);  // Ciclo entre 1 y 10

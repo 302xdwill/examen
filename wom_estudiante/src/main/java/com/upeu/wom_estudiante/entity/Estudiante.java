@@ -1,17 +1,8 @@
 package com.upeu.wom_estudiante.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "estudiantes", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "dni") // Asegura que el DNI sea único
-})
 public class Estudiante {
 
     @Id
@@ -22,20 +13,15 @@ public class Estudiante {
     private String apellido;
 
     @Column(nullable = false, unique = true, length = 8)
-    private String dni;
+    private String dni;  // Cambiado de Integer a String
 
     private String carrera;
+    private String estado; // Ej: ACTIVO, INACTIVO
+    private Integer cicloActual; // Ej: 1, 2, 3... hasta 10
 
-    @Column(nullable = false)
-    private String estado; // Ejemplo: "ACTIVO", "INACTIVO"
-
-    private Integer cicloActual; // Ejemplo: 1, 2, 3, ..., hasta 10
-
-    // Constructor vacío
     public Estudiante() {
     }
 
-    // Constructor con todos los atributos
     public Estudiante(Integer id, String nombre, String apellido, String dni, String carrera, String estado, Integer cicloActual) {
         this.id = id;
         this.nombre = nombre;
@@ -103,7 +89,6 @@ public class Estudiante {
         this.cicloActual = cicloActual;
     }
 
-    // Método toString() para representar el objeto Estudiante como una cadena
     @Override
     public String toString() {
         return "Estudiante{" +
