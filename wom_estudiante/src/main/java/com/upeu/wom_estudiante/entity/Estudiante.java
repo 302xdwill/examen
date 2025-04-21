@@ -12,8 +12,8 @@ public class Estudiante {
     private String nombre;
     private String apellido;
 
-    @Column(nullable = false, unique = true, length = 8)
-    private String dni;  // Cambiado de Integer a String
+    @Column(nullable = false, unique = true, length = 9)  // Cambiar de 8 a 9
+    private String dni;
 
     private String carrera;
     private String estado; // Ej: ACTIVO, INACTIVO

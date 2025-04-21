@@ -20,4 +20,3 @@ spring:
           uri: lb://ms-estudiante-service
           predicates:
             - Path=/estudiantes/**
-        
