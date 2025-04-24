@@ -24,15 +24,13 @@ public class Matricula {
     private String ciclo;
 
     @Transient
-    private EstudianteDto estudiante;  // Información temporal del estudiante, no parte de la DB
+    private EstudianteDto estudiante;
 
     @Transient
-    private List<CursoDto> cursos;    // Información temporal de los cursos, no parte de la DB
+    private List<CursoDto> cursos;
 
-    // Relación con MatriculaDetalle
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "matricula_id") // La columna de la relación en MatriculaDetalle
+    @JoinColumn(name = "matricula_id") // ✅ El campo en la tabla detalle
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<MatriculaDetalle> detalle;
-
 }

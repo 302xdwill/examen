@@ -32,9 +32,16 @@ public class MatriculaServiceImpl implements MatriculaService {
             throw new IllegalStateException("El estudiante no está activo para matricularse.");
         }
 
-        // Validación de capacidad por curso
+        // Validación de capacidad y duplicación
         for (MatriculaDetalle detalle : matricula.getDetalle()) {
             CursoDto cursoDto = cursoClient.obtenerCursoPorId(detalle.getCursoId());
+
+            // Validar si ya está matriculado al curso
+            boolean yaMatriculado = matriculaDetalleRepository
+                    .existsByCursoIdAndMatriculaEstudianteId(detalle.getCursoId(), matricula.getEstudianteId());
+            if (yaMatriculado) {
+                throw new IllegalStateException("El estudiante ya está matriculado en el curso '" + cursoDto.getNombre() + "'.");
+            }
 
             // Validar capacidad
             int inscritos = matriculaDetalleRepository.countByCursoId(detalle.getCursoId());
@@ -42,13 +49,15 @@ public class MatriculaServiceImpl implements MatriculaService {
                 throw new IllegalStateException("El curso '" + cursoDto.getNombre() + "' ya alcanzó su capacidad máxima.");
             }
 
-            // Setear datos del curso en el detalle
+            // Setear datos del curso
             detalle.setCodigoCurso(cursoDto.getCodigo());
             detalle.setNombreCurso(cursoDto.getNombre());
+            detalle.setMatricula(matricula); // importante para persistencia correcta
         }
 
         return matriculaRepository.save(matricula);
     }
+
 
     @Override
     public List<Matricula> listarMatriculas() {

@@ -1,7 +1,10 @@
 package com.upeu.wom_matricula.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -15,7 +18,10 @@ public class MatriculaDetalle {
     private String codigoCurso;
     private String nombreCurso;
 
-    @ManyToOne
-    @JoinColumn(name = "matricula_id") // esto une con la tabla Matricula
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "matricula_id")
+    @JsonIgnore //  Evita ciclos de serialización
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Matricula matricula;
 }
