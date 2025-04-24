@@ -26,37 +26,37 @@ public class MatriculaServiceImpl implements MatriculaService {
 
     @Override
     public Matricula registrarMatricula(Matricula matricula) {
-        // Validar si el estudiante está activo
+        // Verificar si el estudiante está activo
         EstudianteDto estudianteDto = estudianteClient.obtenerEstudiantePorId(matricula.getEstudianteId());
         if (!"ACTIVO".equalsIgnoreCase(estudianteDto.getEstado())) {
-            throw new IllegalStateException("El estudiante no está activo para matricularse.");
+            throw new IllegalStateException("El estudiante está inactivo y no puede registrarse.");
         }
 
-        // Validación de capacidad y duplicación
         for (MatriculaDetalle detalle : matricula.getDetalle()) {
             CursoDto cursoDto = cursoClient.obtenerCursoPorId(detalle.getCursoId());
 
-            // Validar si ya está matriculado al curso
+            // Verificar si ya está matriculado
             boolean yaMatriculado = matriculaDetalleRepository
                     .existsByCursoIdAndMatriculaEstudianteId(detalle.getCursoId(), matricula.getEstudianteId());
             if (yaMatriculado) {
-                throw new IllegalStateException("El estudiante ya está matriculado en el curso '" + cursoDto.getNombre() + "'.");
+                throw new IllegalStateException("El estudiante ya está matriculado en el curso: '" + cursoDto.getNombre() + "'.");
             }
 
-            // Validar capacidad
+            // Verificar capacidad del curso
             int inscritos = matriculaDetalleRepository.countByCursoId(detalle.getCursoId());
             if (inscritos >= cursoDto.getCapacidad()) {
-                throw new IllegalStateException("El curso '" + cursoDto.getNombre() + "' ya alcanzó su capacidad máxima.");
+                throw new IllegalStateException("El curso '" + cursoDto.getNombre() + "' ya no tiene vacantes.");
             }
 
-            // Setear datos del curso
+            // Completar datos del detalle
             detalle.setCodigoCurso(cursoDto.getCodigo());
             detalle.setNombreCurso(cursoDto.getNombre());
-            detalle.setMatricula(matricula); // importante para persistencia correcta
+            detalle.setMatricula(matricula);
         }
 
         return matriculaRepository.save(matricula);
     }
+
 
 
     @Override
