@@ -24,3 +24,7 @@ spring:
           uri: lb://wom-curso-service
           predicates:
             - Path=/cursos/**
+        - id: wom-matricula-service
+          uri: lb://wom-matricula-service
+          predicates:
+            - Path=/matriculas/**
