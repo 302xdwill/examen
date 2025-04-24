@@ -12,8 +12,10 @@ public class MatriculaDetalle {
     private Integer id;
 
     private Integer cursoId;
-
     private String codigoCurso;
-
     private String nombreCurso;
+
+    @ManyToOne
+    @JoinColumn(name = "matricula_id") // esto une con la tabla Matricula
+    private Matricula matricula;
 }

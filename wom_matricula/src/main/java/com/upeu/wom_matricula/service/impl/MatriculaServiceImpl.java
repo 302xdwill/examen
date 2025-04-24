@@ -6,10 +6,10 @@ import com.upeu.wom_matricula.entity.Matricula;
 import com.upeu.wom_matricula.entity.MatriculaDetalle;
 import com.upeu.wom_matricula.feign.CursoClient;
 import com.upeu.wom_matricula.feign.EstudianteClient;
+import com.upeu.wom_matricula.repository.MatriculaDetalleRepository;
 import com.upeu.wom_matricula.repository.MatriculaRepository;
 import com.upeu.wom_matricula.service.MatriculaService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,28 +19,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MatriculaServiceImpl implements MatriculaService {
 
-    @Autowired
     private final MatriculaRepository matriculaRepository;
-
-    @Autowired
+    private final MatriculaDetalleRepository matriculaDetalleRepository;
     private final EstudianteClient estudianteClient;
-
-    @Autowired
     private final CursoClient cursoClient;
 
     @Override
     public Matricula registrarMatricula(Matricula matricula) {
+        // Validar si el estudiante está activo
         EstudianteDto estudianteDto = estudianteClient.obtenerEstudiantePorId(matricula.getEstudianteId());
-
-        if (estudianteDto == null || !estudianteDto.getEstado().equalsIgnoreCase("ACTIVO")) {
-            throw new RuntimeException("El estudiante no está activo");
+        if (!"ACTIVO".equalsIgnoreCase(estudianteDto.getEstado())) {
+            throw new IllegalStateException("El estudiante no está activo para matricularse.");
         }
 
+        // Validación de capacidad por curso
         for (MatriculaDetalle detalle : matricula.getDetalle()) {
             CursoDto cursoDto = cursoClient.obtenerCursoPorId(detalle.getCursoId());
-            if (cursoDto.getCapacidad() <= 0) {
-                throw new RuntimeException("El curso " + cursoDto.getNombre() + " ha alcanzado su capacidad máxima");
+
+            // Validar capacidad
+            int inscritos = matriculaDetalleRepository.countByCursoId(detalle.getCursoId());
+            if (inscritos >= cursoDto.getCapacidad()) {
+                throw new IllegalStateException("El curso '" + cursoDto.getNombre() + "' ya alcanzó su capacidad máxima.");
             }
+
+            // Setear datos del curso en el detalle
+            detalle.setCodigoCurso(cursoDto.getCodigo());
+            detalle.setNombreCurso(cursoDto.getNombre());
         }
 
         return matriculaRepository.save(matricula);
@@ -49,11 +53,7 @@ public class MatriculaServiceImpl implements MatriculaService {
     @Override
     public List<Matricula> listarMatriculas() {
         List<Matricula> matriculas = matriculaRepository.findAll();
-
-        for (Matricula matricula : matriculas) {
-            enrichMatricula(matricula);
-        }
-
+        matriculas.forEach(this::enrichMatricula);
         return matriculas;
     }
 
@@ -61,9 +61,7 @@ public class MatriculaServiceImpl implements MatriculaService {
     public Matricula obtenerMatriculaPorId(Integer id) {
         Matricula matricula = matriculaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Matrícula no encontrada"));
-
         enrichMatricula(matricula);
-
         return matricula;
     }
 
@@ -87,22 +85,17 @@ public class MatriculaServiceImpl implements MatriculaService {
         matriculaRepository.delete(matricula);
     }
 
-    // Método para enriquecer la matrícula con datos externos
     private void enrichMatricula(Matricula matricula) {
-        // Obtener datos del estudiante
         EstudianteDto estudianteDto = estudianteClient.obtenerEstudiantePorId(matricula.getEstudianteId());
         matricula.setEstudiante(estudianteDto);
 
-        // Enriquecer detalle y llenar lista de cursos
         List<CursoDto> cursos = new ArrayList<>();
-
         for (MatriculaDetalle detalle : matricula.getDetalle()) {
             CursoDto cursoDto = cursoClient.obtenerCursoPorId(detalle.getCursoId());
             detalle.setCodigoCurso(cursoDto.getCodigo());
             detalle.setNombreCurso(cursoDto.getNombre());
-            cursos.add(cursoDto); // Llenar la lista de cursos
+            cursos.add(cursoDto);
         }
-
-        matricula.setCursos(cursos); // Asignar cursos a la matrícula
+        matricula.setCursos(cursos);
     }
 }
