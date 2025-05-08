@@ -9,6 +9,7 @@ import com.upeu.wom_matricula.feign.EstudianteClient;
 import com.upeu.wom_matricula.repository.MatriculaDetalleRepository;
 import com.upeu.wom_matricula.repository.MatriculaRepository;
 import com.upeu.wom_matricula.service.MatriculaService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,16 @@ public class MatriculaServiceImpl implements MatriculaService {
     private final MatriculaDetalleRepository matriculaDetalleRepository;
     private final EstudianteClient estudianteClient;
     private final CursoClient cursoClient;
+
+    @PostConstruct
+    public void testCursoClient() {
+        try {
+            CursoDto curso = cursoClient.obtenerCursoPorId(1);
+            System.out.println("✅ Curso obtenido desde Feign: " + curso.getNombre());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public Matricula registrarMatricula(Matricula matricula) {
