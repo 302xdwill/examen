@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(
         name = "wom-curso-service",
+        url="${PORT:${SERVER_PORT:0}}",
         fallback = CursoClientFallback.class
 )
 
