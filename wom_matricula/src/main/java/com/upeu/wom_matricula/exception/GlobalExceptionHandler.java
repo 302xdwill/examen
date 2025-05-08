@@ -1,13 +1,13 @@
-package com.upeu.wom_matricula;
+package com.upeu.wom_matricula.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-public class Exeptions {
-    @RestControllerAdvice
-    public class GlobalExceptionHandler {
+@RestControllerAdvice
+
+public class GlobalExceptionHandler {
 
         @ExceptionHandler(Exception.class)
         public ResponseEntity<String> handleAllExceptions(Exception ex) {
@@ -17,4 +17,4 @@ public class Exeptions {
         }
     }
 
-}
+
