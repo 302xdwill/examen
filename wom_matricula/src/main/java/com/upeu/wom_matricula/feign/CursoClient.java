@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(
         name = "wom-curso-service",
-        url = "http://localhost:8072/cursos",
         fallback = CursoClientFallback.class
 )
+
 public interface CursoClient {
 
     @GetMapping("/{id}")
