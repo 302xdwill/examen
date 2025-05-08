@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 // Nombre del microservicio (según Eureka) y URL base para desarrollo local
-@FeignClient(name = "wom-estudiante-service", url = "http://localhost:8071/estudiantes")
+@FeignClient(name = "wom-estudiante-service")
 public interface EstudianteClient {
 
     @GetMapping("/{id}")
