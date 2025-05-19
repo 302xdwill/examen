@@ -24,6 +24,9 @@ spring:
           uri: lb://wom-curso-service
           predicates:
             - Path=/cursos/**
+          filters:
+            - AuthFilter
+
         - id: wom-matricula-service
           uri: lb://wom-matricula-service
           predicates:
@@ -31,4 +34,5 @@ spring:
         - id: ms-auth-service
           uri: lb://ms-auth-service
           predicates:
-              - Path=/auth/**
+            - P
+
