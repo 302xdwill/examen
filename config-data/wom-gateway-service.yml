@@ -20,6 +20,8 @@ spring:
           uri: lb://wom-estudiante-service
           predicates:
             - Path=/estudiantes/**
+          filters:
+            - AuthFilter
         - id: wom-curso-service
           uri: lb://wom-curso-service
           predicates:
